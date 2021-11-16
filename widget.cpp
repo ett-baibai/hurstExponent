@@ -1,21 +1,24 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include <iostream>
+
+#include "hurst.h"
+
 using namespace std;
 
 Widget::Widget(QWidget *parent): QWidget(parent), ui(new Ui::Widget),
     m_constAxisPointNum(20),
-    m_constWindowWidth(1500),
+    m_constWindowWidth(900),
     m_constWindowHeight(900)
 {
     ui->setupUi(this);
     //坐标轴起点坐标
     m_startX = 100;
-    m_startY = m_constWindowHeight - 50;
+    m_startY = m_constWindowHeight - 100;
 
     //坐标轴宽度和高度
-    m_chartWidth = m_constWindowWidth - m_startX - 70;
-    m_chartHeight = m_constWindowHeight - 2 * 50;
+    m_chartWidth = m_constWindowWidth - m_startX - 50;
+    m_chartHeight = m_constWindowHeight - m_startX - 50;
 
     m_xMin = 0.0;
     m_xMax = 0.0;
@@ -48,12 +51,12 @@ void Widget::mDrawCoordinateAxes()
     QPointF xStartPoint(m_startX, m_startY);
     QPointF xEndPoint(m_chartWidth + m_startX, m_startY);
     m_painter->drawLine(xStartPoint, xEndPoint); // 坐标轴x宽度为width
-    m_painter->drawText(m_startX + m_chartWidth/2, m_startY + 35, QString("X"));
+    m_painter->drawText(m_startX + m_chartWidth + 10, m_startY + 35, QString("logn"));
 
     QPointF yStartPoint(m_startX, m_startY - m_chartHeight);
     QPointF yEndPoint(m_startX, m_startY);
     m_painter->drawLine(yStartPoint, yEndPoint); // 坐标轴y高度为height
-    m_painter->drawText(m_startX - 80, m_startY - m_chartHeight/2, QString("Y"));
+    m_painter->drawText(m_startX - 45, m_startY - m_chartHeight - 20, QString("log(R/S)n"));
 
     //绘制网格
     QPen penDotLine;
@@ -95,6 +98,7 @@ void Widget::mSetAxisSpace()
 
 void Widget::mResetAxis(double xMin, double xMax, double yMin, double yMax)
 {
+    //onRefresh();
     m_xMin = xMin;
     m_xMax = xMax;
     m_yMin = yMin;
@@ -109,8 +113,8 @@ void Widget::mResetAxis(double xMin, double xMax, double yMin, double yMax)
 void Widget::mDrawPoint(double x, double y)
 {
     QPen penPoint;
-    penPoint.setColor(Qt::blue);
-    penPoint.setWidth(5);
+    penPoint.setColor(Qt::red);
+    penPoint.setWidth(3);
 
     double dXStart = m_startX + m_kx * (x - m_xMin);
     m_painter->setPen(penPoint);
@@ -136,8 +140,21 @@ void Widget::on_startBtn_clicked()
 {
     mSetCanvas();
     mDrawCoordinateAxes();
-    mResetAxis(0, 100, 0, 100);
-    mDrawPoint(50,50);
-    mDrawPoint(60,50);
+    mResetAxis(0, 2.5, 0, 2.5);
+
+    const int dataNum = 200;
+    Hurst hurst(dataNum);
+    double *ArryN = new double[dataNum + 1];
+    double *ArryRS = new double[dataNum + 1];
+    hurst.mGetH(ArryN, ArryRS);
+    for(int i = 2; i <= dataNum; i++)
+    {
+        mDrawPoint(ArryN[i],ArryRS[i]);
+    }
+
+    delete [] ArryN;
+    delete [] ArryRS;
+    ArryN = NULL;
+    ArryRS = NULL;
 }
 

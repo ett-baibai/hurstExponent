@@ -1,14 +1,19 @@
 #include "hurst.h"
 #include <stdio.h>
 #include <math.h>
+#include <ctime>
+#include <QtGlobal>
 
 Hurst::Hurst(int dataNum):m_totalDataNum(dataNum)
 {
     m_DataArry = new int[dataNum];
+    //srand(time(NULL));
     for(int i = 0; i < m_totalDataNum; i++)
     {
+        //m_DataArry[i] = rand() % 2;
         m_DataArry[i] = i + 1;
     }
+
 }
 
 Hurst::~Hurst()
@@ -27,12 +32,14 @@ void Hurst::mShowData()
     printf("\n");
 }
 
-void Hurst::mGetH()
+void Hurst::mGetH(double *logN, double *logRS)
 {
     //double *hurst = new double[m_totalDataNum];
     for(int dataLength = 2; dataLength <= m_totalDataNum; dataLength++ )
     {
-        printf("n: %d, log(n): %f, log(R/S)n: %f\n", dataLength, log10(dataLength),log10(mGetAverageRS(dataLength)));
+        logN[dataLength] = log10(dataLength);
+        logRS[dataLength] = log10(mGetAverageRS(dataLength));
+        //printf("n: %d, log(n): %f, log(R/S)n: %f\n", dataLength, logN[dataLength],logRS[dataLength]);
     }
 }
 

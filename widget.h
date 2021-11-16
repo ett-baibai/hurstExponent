@@ -5,8 +5,6 @@
 #include <QtGui>
 #include <QPaintEvent>
 #include <QMainWindow>
-#include <ctime>
-#include <cstdlib>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }

@@ -8,7 +8,7 @@ public:
     ~Hurst();
 
     void mShowData();
-    void mGetH();
+    void mGetH(double *logN, double *logRS);
 private:
     double mGetAverage(int start, int dataLength);
     double mGetStdDeviation(int start, int dataLength, double average);
